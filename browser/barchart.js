@@ -1,31 +1,10 @@
-var margin = {top: 20, right: 30, bottom: 30, left: 20};
+'use strict';
 
-// set width & height of chart
-var height = 500 - margin.top - margin.bottom;
-var width = 1050 - margin.left - margin.right;
+// --------------------
+// DRAW BAR CHART
+// --------------------
 
-var barWidth = 20;
-
-// scale for x-axis
-var x = d3.scale.ordinal()
-    .rangeRoundBands([0, width]);
-
-// scale for y-axis
-var y = d3.scale.linear()
-    .range([0, height]);
-
-
-// select chart element, set width, height & margins
-var chart = d3.select('.bar-chart')
-    .attr('width', width + margin.left + margin.right)
-    .attr('height', height + margin.top + margin.bottom)
-  .append('g')
-    .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
-
-
-// get data
-d3.csv('avengers-txt.csv', function(err, rows){
-
+function createBarChart(rows){
   // group data by year
   var groupedByYear = d3.nest()
         .key(function(d) {
@@ -35,8 +14,6 @@ d3.csv('avengers-txt.csv', function(err, rows){
         .entries(rows);
 
   var parsedData = parseGenderData(groupedByYear);
-
-  console.log('parsedData', parsedData);
 
   // set scale for x-axis
    x.domain(parsedData.map(function(d){
@@ -95,10 +72,13 @@ d3.csv('avengers-txt.csv', function(err, rows){
       .attr('height', function(d) {
         return height - y(d.values.length);
       })
-      .attr('transform', getTransformation);
+      .attr('transform', getTransformation)
+      .on('click', toggleSelectedBar);
+}
 
-
-});
+// -----------------
+// BAR CHART HELPERS
+// -----------------
 
 function getMaxPerYear(year) {
   return d3.max(year.data, function(d){
@@ -138,4 +118,15 @@ function getTransformation (d) {
     horizontal += barWidth - 1;
   }
   return 'translate(' + horizontal + ', ' + (height - (height - y(d.values.length)) )+ ')';
+}
+
+
+function toggleSelectedBar(data){
+  var el = d3.select(this);
+  if(el.classed('selected')){
+    el.classed({'selected': false});
+  } else {
+    el.classed({'selected': true});
+  }
+  toggleSelectedTableRows(data.values);
 }
