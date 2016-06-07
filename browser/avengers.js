@@ -26,38 +26,9 @@
     .append('g')
       .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
 
-// ---------------------
-// SET UP FOR DATA TABLE
-// ---------------------
-
-  var headers = ['Name/Alias', 'Gender', 'Year', 'Notes'];
-  var headerClasses = {'Name/Alias': 'name', 'Gender': 'gender', 'Year': 'year', 'Notes': 'notes'};
-
-  // initialize table with headers
-  var table = d3.select('table');
-
-  table.append('thead')
-    .selectAll('th')
-    .data(headers)
-    .enter().append('th')
-    .html(function(d){
-      return d;
-    });
-
-  var tableBody = table.append('tbody');
-
-
-// --------
-// GET DATA
-// --------
-
-d3.csv('avengers-txt.csv', function(err, rows){
-
-  createBarChart(rows);
-  // addRectEvListeners();
-  createDataTable(rows);
-
-});
+// --------------------
+// DRAW BAR CHART
+// --------------------
 
 function createBarChart(rows){
   // group data by year
@@ -131,6 +102,30 @@ function createBarChart(rows){
       .on('click', toggleSelectedBar);
 }
 
+// ---------------------
+// SET UP FOR DATA TABLE
+// ---------------------
+
+  var headers = ['Name/Alias', 'Gender', 'Year', 'Notes'];
+  var headerClasses = {'Name/Alias': 'name', 'Gender': 'gender', 'Year': 'year', 'Notes': 'notes'};
+
+  // initialize table with headers
+  var table = d3.select('table');
+
+  table.append('thead')
+    .selectAll('th')
+    .data(headers)
+    .enter().append('th')
+    .html(function(d){
+      return d;
+    });
+
+  var tableBody = table.append('tbody');
+
+// ---------------------
+// DRAW DATA TABLE
+// ---------------------
+
 function createDataTable(rows){
 
   // add row to table for each row of data returned
@@ -138,7 +133,7 @@ function createDataTable(rows){
       .data(rows)
       .enter().append('tr')
       .attr('id', function(d){
-        return convertCharacters(d['Name/Alias']);
+        return d['id'];
       });
 
   // insert data for each row
@@ -168,6 +163,23 @@ function createDataTable(rows){
         return d.url;
       });
 }
+
+
+// --------
+// GET DATA
+// --------
+
+d3.csv('avengers-txt.csv', function(err, rows){
+  rows.forEach(function(r, i){
+    r['id'] = 'a' + padString(i, 3, '0');
+  });
+  console.log(rows);
+  createBarChart(rows);
+  // addRectEvListeners();
+  createDataTable(rows);
+
+});
+
 
 // -----------------
 // BAR CHART HELPERS
@@ -228,8 +240,8 @@ function toggleSelectedBar(data){
 function toggleSelectedTableRows(rows) {
   console.log(rows);
   for (var i = 0, len = rows.length; i < len; i++){
-    var row = d3.select('#' + convertCharacters(rows[i]['Name/Alias']));
-    console.log('row id: #' + convertCharacters(rows[i]['Name/Alias']));
+    var row = d3.select('#' + rows[i].id);
+    console.log('row id: #' + rows[i].id);
     console.log('row', row);
     if(row.classed('selected')){
       row.classed({'selected': false});
@@ -239,7 +251,20 @@ function toggleSelectedTableRows(rows) {
   }
 }
 
+
+// -------------------
+// STRING MANIPULATION
+// -------------------
+
 function convertCharacters(name){
   console.log(name, name.replace(/\W/g, ''));
   return name.replace(/\W/g, '');
 }
+ function padString(str, max, padWith){
+  str = str.toString();
+  while(str.length < max){
+    // debugger;
+    str = padWith + str.toString();
+  }
+  return str;
+ }
