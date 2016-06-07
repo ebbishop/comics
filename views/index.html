@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>AVENGERS</title>
+<style>
+
+  .bar-chart rect.male {
+    fill: grey;
+  }
+  .bar-chart rect.female {
+    fill: blue;
+  }
+  .bar-chart text {
+    fill: black;
+    font: 10px sans-serif;
+    text-anchor: end;
+  }
+
+  .axis text {
+    fill: black;
+    font: 10px sans-serif;
+  }
+
+  .axis path, .axis line {
+    fill: none;
+    stroke: #000;
+    shape-rendering: crispEdges;
+  }
+
+</style>
+</head>
+
+
+<body>
+
+
+  <svg class="bar-chart"></svg>
+
+  <script src="https://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+  <script type="text/javascript" src="avengers.js"></script>
+
+</body>
+</html>
