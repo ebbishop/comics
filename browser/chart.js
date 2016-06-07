@@ -25,7 +25,8 @@ var chart = d3.select('.bar-chart')
 
 // get data
 d3.csv('avengers-txt.csv', function(err, rows){
-  // group data by year and gender
+
+  // group data by year
   var groupedByYear = d3.nest()
         .key(function(d) {
           return d.Year;
@@ -34,6 +35,8 @@ d3.csv('avengers-txt.csv', function(err, rows){
         .entries(rows);
 
   var parsedData = parseGenderData(groupedByYear);
+
+  console.log('parsedData', parsedData);
 
   // set scale for x-axis
    x.domain(parsedData.map(function(d){
