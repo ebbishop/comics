@@ -13,6 +13,9 @@
   .bar-chart rect.female {
     fill: blue;
   }
+  .bar-chart rect.selected {
+    fill-opacity: 0.6;
+  }
   .bar-chart text {
     fill: black;
     font: 10px sans-serif;
@@ -30,6 +33,10 @@
     shape-rendering: crispEdges;
   }
 
+  tr.selected {
+    background-color: lightgrey;
+    font-weight: bold;
+  }
 </style>
 </head>
 
@@ -40,8 +47,7 @@
   <svg class="bar-chart"></svg>
   <table></table>
   <script src="https://d3js.org/d3.v3.min.js" charset="utf-8"></script>
-  <script type="text/javascript" src="chart.js"></script>
-  <script type="text/javascript" src="table.js"></script>
+  <script type="text/javascript" src="avengers.js"></script>
 
 </body>
 </html>
