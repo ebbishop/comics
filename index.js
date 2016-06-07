@@ -14,6 +14,8 @@ app.use(logger('dev'));
 
 app.use(express.static(path.join(__dirname, './browser')));
 app.use(express.static(path.join(__dirname, './data')));
+app.use(express.static(path.join(__dirname, './bower_components')));
+
 
 app.get('/*', function (req, res, next) {
   res.sendFile(app.get('indexHTMLPath'));

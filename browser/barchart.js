@@ -15,10 +15,14 @@ function createBarChart(rows){
 
   var parsedData = parseGenderData(groupedByYear);
 
+
   // set scale for x-axis
    x.domain(parsedData.map(function(d){
       return d.year;
     }));
+
+  var barWidth = x.rangeBand()/2;
+  console.log('barWidth', barWidth)
 
   // get maximum count for any gender, in any year
   var maxCt = d3.max(parsedData, getMaxPerYear);
@@ -56,7 +60,7 @@ function createBarChart(rows){
         return 'translate(' + (i * barWidth * 2 ) + ', 0)';
       })
       .attr('height', height)
-      .attr('width', barWidth);
+      .attr('width', barWidth * 2);
 
       // add bars to years
     year.selectAll('.bar')
@@ -68,7 +72,7 @@ function createBarChart(rows){
       .attr('class', function(d){
         return 'bar ' + d.gender;
       })
-      .attr('width', barWidth -1)
+      .attr('width', barWidth - 1)
       .attr('height', function(d) {
         return height - y(d.values.length);
       })
@@ -86,6 +90,7 @@ function getMaxPerYear(year) {
   });
 }
 
+// re-format data nesting for better access to data counts & details
 function parseGenderData(rows) {
   var data = [], temp;
 
@@ -112,12 +117,13 @@ function parseGenderData(rows) {
   return data;
 }
 
-function getTransformation (d) {
-  var horizontal = 0;
+function getTransformation(d, i) {
+  console.log(x.rangeBand()/2, i);
+  var horizontal = x.rangeBand()/4 - 1.5;
   if (d.gender === 'male') {
-    horizontal += barWidth - 1;
+    horizontal += (x.rangeBand()/2) - 1;
   }
-  return 'translate(' + horizontal + ', ' + (height - (height - y(d.values.length)) )+ ')';
+  return 'translate(' + horizontal + ', ' + (height - (height - y(d.values.length)) -.5 )+ ')';
 }
 
 
