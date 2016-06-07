@@ -4,13 +4,12 @@
 // SET UP FOR BAR CHART
 // --------------------
 
-  var margin = {top: 20, right: 30, bottom: 30, left: 20};
+  var margin = {top: 20, right: 30, bottom: 30, left: 30};
 
   // set width & height of chart
   var height = 500 - margin.top - margin.bottom;
-  var width = 1050 - margin.left - margin.right;
+  var width = 1150 - margin.left - margin.right;
 
-  var barWidth = 20;
 
   // scale for x-axis
   var x = d3.scale.ordinal()
@@ -77,7 +76,6 @@ d3.csv('avengers-txt.csv', function(err, rows){
 function padString(str, max, padWith){
   str = str.toString();
   while(str.length < max){
-    // debugger;
     str = padWith + str.toString();
   }
   return str;
