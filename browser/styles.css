@@ -58,7 +58,6 @@ tr:last-child td {
 
 tr.selected {
   background-color: lightgrey;
-  font-weight: bold;
 }
 
 
