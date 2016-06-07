@@ -8,15 +8,16 @@ var y = d3.scale.linear()
 var chart = d3.select('.bar-chart')
             .attr('height', height);
 
-d3.csv('avengers-txt.csv', type, function(err, data){
-  y.domain([0, d3.max(data, function(d){ return d.Appearances; })]);
+d3.csv('avengers-txt.csv', type, function(err, dataRows){
+
+  y.domain([0, d3.max(dataRows, function(d){ return d.Appearances; })]);
 
   // width of svg based on size of dataset
-  chart.attr('width', barWidth * data.length);
+  chart.attr('width', barWidth * dataRows.length);
 
   // create g element for each datum
   var bar = chart.selectAll('g')
-          .data(data)
+          .data(dataRows)
           .enter().append('g')
           .attr('transform', function(d, i) { return 'translate(' + i * barWidth + ', ' + (height - y(d.Appearances)) + ')'; }); //horizontal, vertical translation
 
