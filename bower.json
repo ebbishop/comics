@@ -1,0 +1,23 @@
+{
+  "name": "Avengers",
+  "description": "",
+  "main": "index.js",
+  "authors": [
+    "Emma Bishop <emma.b.bishop@gmail.com>"
+  ],
+  "license": "ISC",
+  "homepage": "https://github.com/ebbishop/comics",
+  "moduleType": [],
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "mocha": "^2.5.3",
+    "chai": "^3.5.0",
+    "d3": "^3.5.17"
+  }
+}

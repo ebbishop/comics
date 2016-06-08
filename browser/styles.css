@@ -1,0 +1,95 @@
+body {
+  font-family: sans-serif;
+  font-size: 1em;
+}
+
+/* STYLES FOR SVG BAR CHART */
+
+.MALE rect {
+  fill: grey;
+}
+.FEMALE rect {
+  fill: blue;
+}
+
+/* legend */
+.legend rect {
+  fill:white;
+  stroke:black;
+  opacity:0.8;
+}
+
+.bar-chart rect {
+  cursor: pointer;
+  stroke: black;
+  stroke-width: .5px;
+}
+
+.bar-chart rect.selected {
+  fill-opacity: 0.6;
+}
+
+.bar-chart text {
+  fill: black;
+  font: 10px sans-serif;
+  text-anchor: end;
+}
+
+/* styling for axes */
+.axis text {
+  fill: black;
+  font: .8em sans-serif;
+}
+
+.axis path, .axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+/* styles for gridlines */
+.grid .tick {
+  stroke: lightgrey;
+  stroke-width: 1px;
+  opacity: 0.7;
+}
+.grid path {
+  stroke-width: 0;
+}
+
+
+/* STYLES FOR DATA TABLE */
+table.data-table {
+  border-collapse: collapse;
+  margin: 30px;
+}
+
+td, th {
+  padding: 5px 10px;
+  border-right: 1px solid silver;
+  border-bottom: 1px solid silver;
+}
+
+td:last-child, th:last-child {
+  border-right: none;
+}
+
+tr:last-child td {
+  border-bottom: none;
+}
+
+tr.selected {
+  background-color: lightgrey;
+}
+
+
+.data-cell.name {
+  cursor: pointer;
+}
+.data-cell.name:hover {
+  background-color: lightgrey;
+}
+.data-cell a {
+  text-decoration: none;
+  color: inherit;
+}
