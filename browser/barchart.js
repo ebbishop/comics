@@ -26,6 +26,12 @@
       .append('g')
         .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
 
+  // append background image
+  chart.append('png:image')
+    .attr('xlink:href', 'avengers.png')
+    .attr('height', height)
+    .attr('width', width)
+
 // --------------------
 // DRAW BAR CHART
 // --------------------
@@ -50,12 +56,12 @@ function createBarChart(rows){
   y.domain([maxCt, 0]);
 
 
-  // append y-axis
+  // draw y-axis
   chart.append('g')
     .attr('class', 'y axis')
     .call(makeYAxis());
 
-  // append y-axis gridlines
+  // draw y-axis gridlines
   chart.append('g')
     .attr('class', 'grid')
     .call(makeYAxis()
@@ -63,14 +69,14 @@ function createBarChart(rows){
       .tickFormat(''))
     .attr('transform', 'translate(.5, 0)');
 
-  // append x-axis
+  // draw x-axis
   chart.append('g')
     .attr('class', 'x axis')
     .attr('transform', 'translate(0, ' + height + ')')
     .call(makeXAxis());
 
 
-  // insert groups for each year's data
+  // draw groups for each year's data
   var year = chart.selectAll('.year')
       .data(parsedData)
       .enter()
@@ -82,7 +88,7 @@ function createBarChart(rows){
       .attr('height', height)
       .attr('width', barWidth * 2);
 
-    // add two bars to each year's group
+    // draw two bars to each year's group
     year.selectAll('.bar')
       .data(function(d, i) {
         return d.data;
@@ -164,7 +170,7 @@ function getTransformation(d, i) {
   if (d.gender === 'male') {
     horizontal += x.rangeBand()/2;
   }
-  return 'translate(' + horizontal + ', ' + (height - (height - y(d.values.length)) - .5)+ ')';
+  return 'translate(' + horizontal + ', ' + (height - (height - y(d.values.length)))+ ')';
 }
 
 
