@@ -11,10 +11,10 @@ d3.csv('avengers-txt.csv', function(err, rows){
     r['id'] = 'a' + padString(i, 3, '0');
   });
 
-  // fill in bar-chart
   createBarChart(rows);
 
-  // fill in data-table
+  createLegend(rows);
+
   createDataTable(rows);
 
 });
