@@ -30,7 +30,8 @@
   chart.append('png:image')
     .attr('xlink:href', 'avengers.png')
     .attr('height', height)
-    .attr('width', width)
+    .attr('width', width);
+
 
 // --------------------
 // DRAW BAR CHART
@@ -38,19 +39,17 @@
 
 function createBarChart(rows){
   // group data by year
-  var groupedByYear = groupByYear(rows);
-  var parsedData = parseGenderData(groupedByYear);
+  // var groupedByYear = groupByYear(rows);
+  var parsedData = parseDataByGender(rows);
 
 
   // set ordinals for x-axis
-   x.domain(parsedData.map(function(d){
-      return d.year;
-    }));
+   x.domain(getList(rows, 'Year'));
 
   var barWidth = x.rangeBand()/2;
 
   // get maximum count for any gender, in any year
-  var maxCt = d3.max(parsedData, getMaxPerYear);
+  var maxCt = d3.max(parsedData, getMaxPerGroup)
 
   // set value scale for y-axis
   y.domain([maxCt, 0]);
@@ -75,35 +74,38 @@ function createBarChart(rows){
     .attr('transform', 'translate(0, ' + height + ')')
     .call(makeXAxis());
 
+  // draw each data series
+  var series = chart.selectAll('.series')
+    .data(parsedData)
+    .enter()
+    .append('g')
+    .attr('height', height)
+    .attr('width', width)
+    .attr('class', function(d){
+      return d.gender;
+    })
+    .attr('transform', function(d){
+      if(d.gender === 'MALE'){
+        return 'translate(' + barWidth + ',0)';
+      }
+    });
 
-  // draw groups for each year's data
-  var year = chart.selectAll('.year')
-      .data(parsedData)
-      .enter()
-      .append('g')
-      .attr('class', 'year')
-      .attr('transform', function(d, i){
-        return 'translate(' + (x(d.year) ) + ', 0)';
-      })
-      .attr('height', height)
-      .attr('width', barWidth * 2);
+  series.selectAll('.bar')
+    .data(function(d, i){
+      return d.data;
+    })
+    .enter()
+    .append('rect')
+    .attr('class', function(d){
+      return d.year;
+    })
+    .attr('width', barWidth)
+    .attr('height', function(d){
+      return height - y(d.data.length);
+    })
+    .attr('transform', getTransformation)
+    .on('click', toggleSelectedBar);
 
-    // draw two bars to each year's group
-    year.selectAll('.bar')
-      .data(function(d, i) {
-        return d.data;
-      })
-      .enter()
-      .append('rect')
-      .attr('class', function(d){
-        return 'bar ' + d.gender;
-      })
-      .attr('width', barWidth)
-      .attr('height', function(d) {
-        return height - y(d.values.length);
-      })
-      .attr('transform', getTransformation)
-      .on('click', toggleSelectedBar);
 }
 
 
@@ -125,52 +127,17 @@ function makeYAxis(){
     .orient('left');
 }
 
-function getMaxPerYear(year) {
-  return d3.max(year.data, function(d){
-    return d.values.length;
+function getMaxPerGroup(group) {
+  return d3.max(group.data, function(d){
+    return d.data.length;
   });
-}
-function groupByYear(rows) {
-  return d3.nest()
-    .key(function(d) {
-      return d.Year;
-    })
-    .sortKeys(d3.ascending)
-    .entries(rows);
-}
-// re-format data nesting for better access to data counts & details
-function parseGenderData(rows) {
-  var data = [], temp;
-
-  for (var i = 0, len = rows.length; i < len; i ++){
-    temp = {};
-    temp.year = rows[i].key;
-    temp.data = [
-      {
-        gender: 'female',
-        values: rows[i].values.filter(function(a){
-          return a.Gender === 'FEMALE';
-        })
-      },
-      {
-        gender: 'male',
-        values: rows[i].values.filter(function (a) {
-          return a.Gender === 'MALE';
-        })
-      }
-    ];
-    data.push(temp);
-  }
-
-  return data;
 }
 
 function getTransformation(d, i) {
-  var horizontal = 0;
-  if (d.gender === 'male') {
-    horizontal += x.rangeBand()/2;
-  }
-  return 'translate(' + horizontal + ', ' + (height - (height - y(d.values.length)))+ ')';
+  // debugger;
+  var horizontal = x(d.year);
+  var vertical = (height - (height - y(d.data.length)));
+  return 'translate(' + horizontal + ', ' + vertical + ')';
 }
 
 
@@ -182,4 +149,47 @@ function toggleSelectedBar(data){
     el.classed({'selected': true});
   }
   toggleSelectedTableRows(data.values);
+}
+
+
+function parseDataByGender(rows) {
+  var genders = getList(rows, 'Gender');
+  var years = getList(rows, 'Year');
+
+  var dataByGender = [];
+
+  // group all data rows by gender
+  genders.forEach(function(g){
+    dataByGender.push(getDataForKeyByValue(rows, 'Gender', g));
+  });
+
+  // group data rows for each gender by year
+  dataByGender.map(function(g){
+    var data = [];
+    years.forEach(function(y){
+      data.push(getDataForKeyByValue(g.data, 'Year', y));
+    });
+    g.data = data;
+  });
+
+  return dataByGender;
+}
+
+function getList(rows, key) {
+  var items = [];
+  for (var i = 0, len = rows.length; i < len; i ++){
+    if(items.indexOf(rows[i][key]) < 0){
+      items.push(rows[i][key]);
+    }
+  }
+  return items;
+}
+
+function getDataForKeyByValue(data, key, value) {
+  var filteredData = {};
+  filteredData[key.toLowerCase()] = value
+  filteredData['data'] = data.filter(function(d){
+    return d[key] === value;
+  });
+  return filteredData;
 }
