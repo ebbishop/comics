@@ -1,129 +1,143 @@
 'use strict';
 
 // --------------------
+// SET UP FOR BAR CHART
+// --------------------
+
+  var margin = {top: 20, right: 30, bottom: 30, left: 30};
+
+  // set width & height of chart
+  var height = 500 - margin.top - margin.bottom;
+  var width = 1150 - margin.left - margin.right;
+
+
+  // pixel scale for x-axis
+  var x = d3.scale.ordinal()
+      .rangeRoundBands([0, width], 0.1);
+
+  // pixel scale for y-axis
+  var y = d3.scale.linear()
+      .range([0, height]);
+
+  // select chart element, set width, height & margins
+  var chart = d3.select('.bar-chart')
+        .attr('width', width + margin.left + margin.right)
+        .attr('height', height + margin.top + margin.bottom)
+      .append('g')
+        .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+
+  // append background image
+  chart.append('png:image')
+    .attr('xlink:href', 'avengers.png')
+    .attr('height', height)
+    .attr('width', width);
+
+
+// --------------------
 // DRAW BAR CHART
 // --------------------
 
 function createBarChart(rows){
   // group data by year
-  var groupedByYear = d3.nest()
-        .key(function(d) {
-          return d.Year;
-        })
-        .sortKeys(d3.ascending)
-        .entries(rows);
-
-  var parsedData = parseGenderData(groupedByYear);
+  // var groupedByYear = groupByYear(rows);
+  var parsedData = parseDataByGender(rows);
 
 
-  // set scale for x-axis
-   x.domain(parsedData.map(function(d){
-      return d.year;
-    }));
+  // set ordinals for x-axis
+   x.domain(getList(rows, 'Year'));
 
   var barWidth = x.rangeBand()/2;
-  console.log('barWidth', barWidth)
 
   // get maximum count for any gender, in any year
-  var maxCt = d3.max(parsedData, getMaxPerYear);
+  var maxCt = d3.max(parsedData, getMaxPerGroup)
 
-  // set scale for y-axis
+  // set value scale for y-axis
   y.domain([maxCt, 0]);
 
-  // x-axis generator
-  var xAxis = d3.svg.axis()
-      .scale(x)
-      .orient('bottom');
 
-  // y-axis generator
-  var yAxis = d3.svg.axis()
-      .scale(y)
-      .orient('left');
+  // draw y-axis
+  chart.append('g')
+    .attr('class', 'y axis')
+    .call(makeYAxis());
 
-  // append x-axis
+  // draw y-axis gridlines
+  chart.append('g')
+    .attr('class', 'grid')
+    .call(makeYAxis()
+      .tickSize(-width, 0, 0)
+      .tickFormat(''))
+    .attr('transform', 'translate(.5, 0)');
+
+  // draw x-axis
   chart.append('g')
     .attr('class', 'x axis')
     .attr('transform', 'translate(0, ' + height + ')')
-    .call(xAxis);
+    .call(makeXAxis());
 
-  chart.append('g')
-    .attr('class', 'y axis')
-    .call(yAxis);
+  // draw each data series
+  var series = chart.selectAll('.series')
+    .data(parsedData)
+    .enter()
+    .append('g')
+    .attr('height', height)
+    .attr('width', width)
+    .attr('class', function(d){
+      return d.gender;
+    })
+    .attr('transform', function(d){
+      if(d.gender === 'MALE'){
+        return 'translate(' + barWidth + ',0)';
+      }
+    });
 
+  series.selectAll('.bar')
+    .data(function(d, i){
+      return d.data;
+    })
+    .enter()
+    .append('rect')
+    .attr('class', function(d){
+      return d.year;
+    })
+    .attr('width', barWidth)
+    .attr('height', function(d){
+      return height - y(d.data.length);
+    })
+    .attr('transform', getTransformation)
+    .on('click', toggleSelectedBar);
 
-  var year = chart.selectAll('.year')
-      .data(parsedData)
-      .enter()
-      .append('g')
-      .attr('class', 'year')
-      .attr('transform', function(d, i){
-        return 'translate(' + (i * barWidth * 2 ) + ', 0)';
-      })
-      .attr('height', height)
-      .attr('width', barWidth * 2);
-
-      // add bars to years
-    year.selectAll('.bar')
-      .data(function(d, i) {
-        return d.data;
-      })
-      .enter()
-      .append('rect')
-      .attr('class', function(d){
-        return 'bar ' + d.gender;
-      })
-      .attr('width', barWidth - 1)
-      .attr('height', function(d) {
-        return height - y(d.values.length);
-      })
-      .attr('transform', getTransformation)
-      .on('click', toggleSelectedBar);
 }
+
+
+
 
 // -----------------
 // BAR CHART HELPERS
 // -----------------
 
-function getMaxPerYear(year) {
-  return d3.max(year.data, function(d){
-    return d.values.length;
+function makeXAxis() {
+  return d3.svg.axis()
+    .scale(x)
+    .orient('bottom');
+}
+
+function makeYAxis(){
+  return d3.svg.axis()
+    .scale(y)
+    .orient('left');
+}
+
+function getMaxPerGroup(group) {
+  return d3.max(group.data, function(d){
+    return d.data.length;
   });
 }
 
-// re-format data nesting for better access to data counts & details
-function parseGenderData(rows) {
-  var data = [], temp;
-
-  for (var i = 0, len = rows.length; i < len; i ++){
-    temp = {};
-    temp.year = rows[i].key;
-    temp.data = [
-      {
-        gender: 'female',
-        values: rows[i].values.filter(function(a){
-          return a.Gender === 'FEMALE';
-        })
-      },
-      {
-        gender: 'male',
-        values: rows[i].values.filter(function (a) {
-          return a.Gender === 'MALE';
-        })
-      }
-    ];
-    data.push(temp);
-  }
-
-  return data;
-}
-
 function getTransformation(d, i) {
-  console.log(x.rangeBand()/2, i);
-  var horizontal = x.rangeBand()/4 - 1.5;
-  if (d.gender === 'male') {
-    horizontal += (x.rangeBand()/2) - 1;
-  }
-  return 'translate(' + horizontal + ', ' + (height - (height - y(d.values.length)) -.5 )+ ')';
+  // debugger;
+  var horizontal = x(d.year);
+  var vertical = (height - (height - y(d.data.length)));
+  return 'translate(' + horizontal + ', ' + vertical + ')';
 }
 
 
@@ -135,4 +149,47 @@ function toggleSelectedBar(data){
     el.classed({'selected': true});
   }
   toggleSelectedTableRows(data.values);
+}
+
+
+function parseDataByGender(rows) {
+  var genders = getList(rows, 'Gender');
+  var years = getList(rows, 'Year');
+
+  var dataByGender = [];
+
+  // group all data rows by gender
+  genders.forEach(function(g){
+    dataByGender.push(getDataForKeyByValue(rows, 'Gender', g));
+  });
+
+  // group data rows for each gender by year
+  dataByGender.map(function(g){
+    var data = [];
+    years.forEach(function(y){
+      data.push(getDataForKeyByValue(g.data, 'Year', y));
+    });
+    g.data = data;
+  });
+
+  return dataByGender;
+}
+
+function getList(rows, key) {
+  var items = [];
+  for (var i = 0, len = rows.length; i < len; i ++){
+    if(items.indexOf(rows[i][key]) < 0){
+      items.push(rows[i][key]);
+    }
+  }
+  return items;
+}
+
+function getDataForKeyByValue(data, key, value) {
+  var filteredData = {};
+  filteredData[key.toLowerCase()] = value
+  filteredData['data'] = data.filter(function(d){
+    return d[key] === value;
+  });
+  return filteredData;
 }

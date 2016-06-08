@@ -1,4 +1,24 @@
 'use strict';
+// ---------------------
+// SET UP FOR DATA TABLE
+// ---------------------
+
+  var headers = ['Name/Alias', 'Gender', 'Year', 'Notes'];
+
+  var table = d3.select('table');
+
+  // initialize table with headers
+  table.append('thead')
+    .selectAll('th')
+    .data(headers)
+    .enter().append('th')
+    .html(function(d){
+      return d;
+    });
+
+  var tableBody = table.append('tbody');
+
+
 
 // ---------------------
 // DRAW DATA TABLE
@@ -16,12 +36,7 @@ function createDataTable(rows){
 
   // insert data for each row
   var cell = row.selectAll('td')
-      .data(function(d){
-        // return row's corresponding value for each header
-        return headers.map(function(col){
-          return {column: abbreviate(col), value: d[col], url: d.URL}
-        });
-      })
+      .data(getValueByColumn) // returns object with column classname and datavalue
       .enter().append('td')
       .attr('class', function(d){
         return 'data-cell ' + d.column;
@@ -37,17 +52,23 @@ function createDataTable(rows){
   var nameCells = d3.selectAll('.name')
       .append('a')
       .html(function(d){
-        return d.value ? d.value : extractName(d.url);
+        return d.value ? d.value : parseName(d.url);
       })
       .attr('href', function(d){
         return d.url;
       });
 }
 
-
 // ---------------------
 // DATA TABLE HELPERS
 // ---------------------
+
+function getValueByColumn(d){
+  // return row's corresponding value for each header
+  return headers.map(function(col){
+    return {column: headerToClassName(col), value: d[col], url: d.URL}
+  });
+}
 
 function toggleSelectedTableRows(rows) {
   for (var i = 0, len = rows.length; i < len; i++){
@@ -60,3 +81,19 @@ function toggleSelectedTableRows(rows) {
   }
 }
 
+// -------------------
+// STRING MANIPULATION
+// -------------------
+
+function headerToClassName(str){
+  return str.split('/')[0].toLowerCase();
+}
+
+function parseName(url){
+  var urlArr = url.split('/')
+  var name = urlArr[urlArr.length-1];
+
+  // find the first non-word character and trim away following chars
+  var firstSymb = name.search(/\W/i);
+  return name.slice(0, firstSymb).replace(/[^a-z]/ig, ' ').replace(/$\s/,'');
+}

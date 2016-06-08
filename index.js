@@ -13,8 +13,8 @@ app.set('indexHTMLPath', indexPath);
 app.use(logger('dev'));
 
 app.use(express.static(path.join(__dirname, './browser')));
-app.use(express.static(path.join(__dirname, './data')));
-app.use(express.static(path.join(__dirname, './bower_components')));
+app.use(express.static(path.join(__dirname, './assets')));
+app.use(express.static(path.join(__dirname, './public')));
 
 
 app.get('/*', function (req, res, next) {
