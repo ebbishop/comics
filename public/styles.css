@@ -11,10 +11,10 @@ body {
   stroke-width: .5px;
 }
 
-.bar-chart rect.male {
+.MALE rect {
   fill: grey;
 }
-.bar-chart rect.female {
+.FEMALE rect {
   fill: blue;
 }
 .bar-chart rect.selected {

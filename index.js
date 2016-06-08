@@ -6,7 +6,7 @@ var app = express();
 
 var port = 8080;
 var rootPath = path.join(__dirname, './');
-var indexPath =  path.join(rootPath, 'views/index.html');
+var indexPath =  path.join(rootPath, 'public/index.html');
 
 app.set('indexHTMLPath', indexPath);
 
@@ -15,6 +15,7 @@ app.use(logger('dev'));
 app.use(express.static(path.join(__dirname, './browser')));
 app.use(express.static(path.join(__dirname, './assets')));
 app.use(express.static(path.join(__dirname, './public')));
+app.use(express.static(path.join(__dirname, './bower_components')));
 
 
 app.get('/*', function (req, res, next) {

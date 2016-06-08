@@ -1,5 +1,5 @@
 {
-  "name": "charts",
+  "name": "Avengers",
   "description": "",
   "main": "index.js",
   "authors": [
@@ -8,7 +8,6 @@
   "license": "ISC",
   "homepage": "https://github.com/ebbishop/comics",
   "moduleType": [],
-  "private": true,
   "ignore": [
     "**/.*",
     "node_modules",
