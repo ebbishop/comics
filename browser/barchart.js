@@ -11,6 +11,7 @@
   var width = 1150 - margin.left - margin.right;
 
 
+
   // pixel scale for x-axis
   var x = d3.scale.ordinal()
       .rangeRoundBands([0, width], 0.1);
@@ -38,8 +39,8 @@
 // --------------------
 
 function createBarChart(rows){
+
   // group data by year
-  // var groupedByYear = groupByYear(rows);
   var parsedData = parseDataByGender(rows);
 
 
@@ -148,7 +149,7 @@ function toggleSelectedBar(data){
   } else {
     el.classed({'selected': true});
   }
-  toggleSelectedTableRows(data.values);
+  toggleSelectedTableRows(data.data);
 }
 
 
