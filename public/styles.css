@@ -18,7 +18,8 @@ body {
   fill: blue;
 }
 .bar-chart rect.selected {
-  fill-opacity: 0.6;
+  fill: #FFD700;
+  opacity: .7;
 }
 
 .bar-chart text {
@@ -49,6 +50,25 @@ body {
   stroke-width: 0;
 }
 
+/* legend */
+.legend {
+  stroke: black;
+  stroke-width: .5px;
+}
+.legend text {
+  fill: black;
+  font: 10px sans-serif;
+  text-anchor: start;
+}
+.legend rect {
+  stroke: black;
+  stroke-width: .5px;
+}
+.legend .container {
+  fill: none;
+}
+
+
 /* STYLES FOR DATA TABLE */
 table.data-table {
   border-collapse: collapse;
@@ -70,7 +90,7 @@ tr:last-child td {
 }
 
 tr.selected {
-  background-color: lightgrey;
+  background-color: rgba(255,215,0, .6);
 }
 
 
