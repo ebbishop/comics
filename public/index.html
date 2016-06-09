@@ -9,14 +9,19 @@
 <body>
 
 
-  <svg class="bar-chart"></svg>
-  <table class="data-table"></table>
   <script src="d3/d3.min.js" charset="utf-8"></script>
-  <script type="text/javascript" src="avengers.js"></script>
-  <script type="text/javascript" src="barchart.js"></script>
-  <script type="text/javascript" src="legend.js"></script>
-  <script type="text/javascript" src="datatable.js"></script>
+  <script src="angular/angular.min.js"></script>
+  <script type="text/javascript" src="avengers.js" defer></script>
+  <script type="text/javascript" src="barchart.js" defer></script>
+  <script type="text/javascript" src="legend.js" defer></script>
+  <script type="text/javascript" src="datatable.js" defer></script>
+  <script type="text/javascript" src="utils.js" defer></script>
 
+  <div ng-app="myApp" ng-controller="MainCtrl">
+    <h1>The Avengers, by Gender and Year</h1>
+    <bar-chart data="avengerData"></bar-chart>
+    <avenger-table data="avengerData"></avenger-table>
+  </div>
 
 </body>
 </html>

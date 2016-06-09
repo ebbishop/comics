@@ -2,7 +2,9 @@ body {
   font-family: sans-serif;
   font-size: 1em;
 }
-
+h1 {
+  text-align: center;
+}
 /* STYLES FOR SVG BAR CHART */
 
 .bar-chart rect {
@@ -15,7 +17,7 @@ body {
   fill: grey;
 }
 .FEMALE rect {
-  fill: blue;
+  fill: #074C85;
 }
 .bar-chart rect.selected {
   fill: #FFD700;
