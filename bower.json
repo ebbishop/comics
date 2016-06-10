@@ -16,8 +16,6 @@
     "tests"
   ],
   "dependencies": {
-    "mocha": "^2.5.3",
-    "chai": "^3.5.0",
     "d3": "^3.5.17",
     "angular": "^1.5.6"
   }

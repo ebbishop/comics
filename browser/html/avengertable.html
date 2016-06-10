@@ -1,0 +1,11 @@
+<table>
+  <thead>
+    <td ng-repeat="header in headers">{{header}}</td>
+  </thead>
+  <tbody>
+    <tr ng-repeat="row in rows" id="{{row.id}}" ng-class="row.active ? 'active' : ''">
+      <!-- <td>{{row}}</td> -->
+      <td ng-repeat="(key, value) in row" ng-if="headers.indexOf(key) > -1" ng-class="key | headerToClass">{{value ? value : 'MISSING'}}</td>
+    </tr>
+  </tbody>
+</table>

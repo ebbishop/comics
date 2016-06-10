@@ -17,7 +17,7 @@ h1 {
   fill: grey;
 }
 .FEMALE rect {
-  fill: blue;
+  fill: #074C85;
 }
 .bar-chart rect.selected {
   fill: #FFD700;
