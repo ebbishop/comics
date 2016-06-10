@@ -1,31 +1,26 @@
 var app = angular.module('myApp', []);
 
-app.controller('MainCtrl', function($scope, $window) {
+app.controller('MainCtrl', function($scope, $window, UtilsFactory) {
 
   d3.csv('avengers-txt.csv', function(err, rows){
 
-    // add id field to each row
+    // add id field and active field to each row
     $scope.$apply(function(){
       rows.forEach(function(r, i){
-        r['id'] = 'a' + padString(i, 3, '0');
+        r['id'] = 'a' + UtilsFactory.padString(i, 3, '0');
+        r['active'] = false;
       });
       $scope.avengerData = rows;
     });
   });
 
-  function padString(str, max, padWith){
-    str = str.toString();
-    while(str.length < max){
-      str = padWith + str.toString();
-    }
-    return str;
-  }
 
 });
 
 app.directive('barChart', function(BarChartFactory, LegendFactory){
 
   function link(scope, el, attr){
+
     el = el[0];
 
     // -----------------
@@ -51,9 +46,9 @@ app.directive('barChart', function(BarChartFactory, LegendFactory){
       .attr('height', height)
       .attr('width', width);
 
-  // -----------------
-  // LEGEND SETUP
-  // -----------------
+    // -----------------
+    // LEGEND SETUP
+    // -----------------
 
     var lMargin = LegendFactory.lMargin;
     var lPadding = LegendFactory.lPadding;
@@ -77,60 +72,69 @@ app.directive('barChart', function(BarChartFactory, LegendFactory){
       .attr('y', lPadding.top)
       .attr('alignment-baseline', 'text-before-edge');
 
-    scope.$watch('data', update, true);
+    // watch scope for data in rows
+    scope.$watch('rows', update, true);
 
     function update(newVal, oldVal){
-      if(!scope.data) return;
-      var data = scope.data;
-      BarChartFactory.createBarChart(data, chart);
-      LegendFactory.createLegend(data, legend);
+      if(!scope.rows) return;
+      var rows = scope.rows;
+      BarChartFactory.createBarChart(rows, chart);
+      LegendFactory.createLegend(rows, legend);
     }
 
   }
+
   return {
     restrict: 'E',
     link: link,
     scope: {
-      data: '='
+      rows: '='
     }
   }
 });
 
+// ---------------------
+// DATA TABLE DIRECTIVE
+// ---------------------
 app.directive('avengerTable', function(TableFactory){
   function link(scope, el, attrs){
-    // ---------------------
-    // SET UP FOR DATA TABLE
-    // ---------------------
+    scope.headers = TableFactory.headers;
 
-    var table = d3.select(el[0]).append('table')
-        .attr('class', 'data-table');
-    var headers = TableFactory.headers;
-
-    // initialize table with headers
-    table.append('thead')
-      .selectAll('th')
-      .data(headers)
-      .enter().append('th')
-      .html(function(d){
-        return d;
-      });
-
-    var tableBody = table.append('tbody');
-
-
-    scope.$watch('data', update, true);
+    scope.$watch('rows', update, true);
 
     function update(newVal, oldVal){
-      if(!scope.data) return;
-      var data = scope.data;
-      TableFactory.createDataTable(data, tableBody);
+      if(!scope.rows) return;
+      var rows = scope.rows;
     }
   }
   return {
+    templateUrl: 'html/avengertable.html',
     restrict: 'E',
-    link: link,
     scope: {
-      data: '='
-    }
+      rows: '='
+    },
+    link: link
   }
-})
+});
+
+
+// ----------
+// FILTERS
+// ----------
+app.filter('headerToClass', function(){
+  return function(str){
+    return str.split('/')[0].toLowerCase();
+  };
+});
+
+app.filter('parseName', function(){
+  return function(url){
+    var urlArr = url.split('/')
+    var name = urlArr[urlArr.length-1];
+
+    // find the first non-word character and trim away following chars
+    var firstSymb = name.search(/\W/i);
+    return name.slice(0, firstSymb).replace(/[^a-z]/ig, ' ').replace(/$\s/,'');
+  };
+
+});
